@@ -1,0 +1,110 @@
+
+filetype plugin on
+syntax on
+
+" Set commands
+set nocompatible
+set path+=**
+set wildmenu
+set expandtab
+set softtabstop=4
+set tabstop=4
+set shiftwidth=4
+set number
+set autoindent
+set autoindent
+set smartindent
+set scrolloff=5
+set hls
+set ruler
+set mouse=a
+set hidden
+
+set exrc
+set secure
+
+set langmenu=en_US.UTF-8
+
+" Make backspace usefull
+set backspace=indent,eol,start
+
+
+" Other options
+if has('clipboard')
+    set clipboard=unnamedplus
+else
+    set clipboard=unnamed
+endif
+
+let mapleader=" "
+language message en_US.UTF-8
+
+" Colorscheme
+set t_Co=256
+colorscheme default
+
+" (Re)maps
+
+nnoremap <leader>, :w<cr>
+nnoremap <leader><space> :noh<cr>
+nnoremap <leader>cc gg"+yG<c-o>
+
+noremap <silent> <expr> j (v:count == 0 ? 'gj' : 'j')
+noremap <silent> <expr> k (v:count == 0 ? 'gk' : 'k')
+
+vnoremap J :m '>+1<cr>gv=gv
+vnoremap K :m '<-2<cr>gv=gv
+
+nnoremap <Up> :resize -2<cr>
+nnoremap <Down> :resize +2<cr>
+nnoremap <Left> :vertical resize -2<cr>
+nnoremap <Right> :vertical resize +2<cr>
+
+nnoremap <A-j> :cnext<cr>
+nnoremap <A-k> :cprev<cr>
+nnoremap <A-q> :cclose<cr>
+
+xnoremap <leader>p "_dP
+vnoremap <leader>p "_dP
+
+nnoremap Q <nop>
+
+nnoremap <silent><c-h> :tabprev<cr>
+nnoremap <silent><c-l> :tabnext<cr>
+
+tnoremap <esc> <c-\><c-n>
+
+
+" emacs movement in cmd mode
+cnoremap <C-A>		<Home>
+cnoremap <C-B>		<Left>
+cnoremap <C-D>		<Del>
+cnoremap <C-E>		<End>
+cnoremap <C-F>		<Right>
+cnoremap <C-N>		<Down>
+cnoremap <C-P>		<Up>
+cnoremap <Esc><C-B>	<S-Left>
+cnoremap <Esc><C-F>	<S-Right>
+
+" Backup
+
+if has('presistent_undo')
+    set undofile
+    set undolevels=3000
+    set undoreload=10000
+endif
+set nobackup
+set noswapfile
+
+augroup SZYMON_FILETYPES
+    au!
+    au FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
+    au FileType jsonnet setlocal ts=2 sts=2 sw=2 expandtab
+
+augroup END
+
+" Highlight
+highligh Visual gui=None term=reverse ctermfg=none ctermbg=232
+highligh search gui=none term=reverse ctermfg=none ctermbg=232
+highligh Folded gui=None term=reverse ctermfg=none ctermbg=232
+

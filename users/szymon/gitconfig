@@ -1,0 +1,91 @@
+# vim: set ts=8 sw=8 sts=8 noexpandtab nosmartindent :
+
+[user]
+	name = "Szymon Rams"
+	email = "szymon.rams@icloud.com"
+
+[init]
+	defaultBranch = main
+
+[alias]
+	# most of these aliases are directly taken from https://git.wiki.kernel.org/index.php/Aliases
+	s = status
+	st = status -s
+	cl = clone
+	ci = commit
+	co = checkout
+	br = branch
+	r = reset
+	cp = cherry-pick
+	fp = fetch --progress
+	poh = push origin head
+	df = diff
+	dc = diff --cached
+	clear = clean
+
+	au = add -u
+
+	# a shortcut for seeig the fetched commits
+	lc = log ORIG_HEAD.. --stat --no-merges
+
+	# undo the last commit
+	undo = reset --soft HEAD^
+
+	changes = diff --name-status -r
+	diffstat = diff --stat -r
+
+	graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
+
+	# pretty logs
+	lg = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
+	lga = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative --all
+	ls = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
+	ls10 = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative -10
+
+	yolo = !git commit -m "$(curl -s whatthecommit.com/index.txt)"
+
+	ignore = update-index --assume-unchanged
+	acknowledge = update-index --no-assume-unchanged
+	reword = ci --amend
+
+	add-exclude = "!f() { readlink -f $1 | sed 's~'$(git rev-parse --show-toplevel)'/~~' | tee -a $(git rev-parse --show-toplevel)/.git/info/exclude ; } ; f"
+
+	dfu = "!d() { ( git diff --color ; git ls-files --other --exclude-standard | while read -r i; do git diff --color -- /dev/null $i; done ) | `git config --get core.pager`; }; d"
+
+	la = "!git config --global --list | grep '^alias'"
+
+[merge]
+	tool = vimdiff
+
+[push]
+	default = current
+
+[pull]
+	rebase = true
+
+[rebase]
+	autoStash = true
+
+[fetch]
+	prune = true
+
+[core]
+	editor = vim
+	pager = less -FRSX
+
+[include]
+	path = ~/.gitconfig_local
+
+[commit]
+	template = /home/srams/.gitmessage
+
+[mailmap]
+	file = ~/.mailmap
+[safe]
+	directory = /home/srams/tools/neovim
+
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f
