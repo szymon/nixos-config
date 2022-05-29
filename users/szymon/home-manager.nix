@@ -4,7 +4,7 @@
   home.packages = with pkgs; [
     efm-langserver
     firefox
-    go
+    go_1_18
     gopls
     kubectl
     kubeseal
@@ -16,6 +16,9 @@
     rnix-lsp
     luaformatter
     feh
+    picom
+    direnv
+    nix-direnv
   ];
 
   home.sessionVariables = {
@@ -48,10 +51,6 @@
   };
 
   programs = {
-    direnv = {
-      enable = true;
-      nix-direnv.enable = true;
-    };
 
     fish.enable = true;
     tmux.enable = true;

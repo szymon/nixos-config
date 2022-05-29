@@ -46,12 +46,14 @@
 
     displayManager = {
       defaultSession = "none+i3";
+
       lightdm.enable = true;
       sessionCommands = "${pkgs.xorg.xset}/bin/xset r rate 200 40";
     };
 
     windowManager = {
       i3.enable = true;
+      i3.package = pkgs.i3-gaps;
     };
   };
 
