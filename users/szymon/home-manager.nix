@@ -19,6 +19,7 @@
     picom
     direnv
     nix-direnv
+    minikube
   ];
 
   home.sessionVariables = {
@@ -33,6 +34,7 @@
   home.file.".inputrc".source = ./inputrc;
   home.file.".gitconfig".source = ./gitconfig;
   home.file.".vimrc".source = ./vimrc;
+  home.file.".tmux.conf".source = ./tmux;
 
   home.file.".local/share/nvim/site/pack/packer/start/packer.nvim" = {
     source = builtins.fetchGit {

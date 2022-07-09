@@ -1,0 +1,284 @@
+set -g default-terminal "screen-256color"
+set -g history-limit 20000
+set -g buffer-limit 20
+set -sg escape-time 0
+set -g display-time 1500
+set -g remain-on-exit off
+set -g repeat-time 300
+setw -g allow-rename off
+setw -g automatic-rename off
+# setw -g aggressive-resize on
+
+# set-option -g default-command "/usr/local/bin/zsh -c 'which reattach-to-user-namespace >/dev/null && exec reattach-to-user-namespace $SHELL -l || exec $SHELL -l'"
+
+bind-key C-q choose-tree
+
+# Change prefix key to C-a, easier to type, same to "screen"
+set-option -g prefix C-s
+unbind-key C-s
+bind-key C-s send-prefix
+set -g base-index 0
+
+# Set parent terminal title to reflect current window in tmux session 
+set -g set-titles on
+set -g set-titles-string "#S - #I:#W"
+
+set -g base-index 0
+setw -g pane-base-index 0
+
+# Enable mouse support
+# set -g mouse on
+
+#set -g default-shell /usr/local/bin/zsh
+
+# Easy config reload and editing
+bind-key C-r source-file ~/.tmux.conf \; display-message "Configuration Reloaded"
+bind-key C-e new-window -n 'tmux.conf' "sh -c '\${EDITOR:-vim} ~/.tmux.conf && tmux source ~/.tmux.conf && tmux display \"Configuration Reloaded\"'"
+
+# vi is the answer
+setw -g mode-keys vi
+setw -g status-keys emacs
+
+# decrease command delay (increases vim responsiveness)
+set -sg escape-time 0
+
+set-option -g default-terminal screen-256color
+
+bind-key : command-prompt
+bind-key r refresh-client
+bind-key L clear-history
+
+# bind-key space next-window
+bind-key space copy-mode
+bind-key c-space copy-mode
+
+# use vim-like keys for splits and windows
+bind-key v split-window -h
+bind-key s split-window -v
+bind-key h select-pane -L
+bind-key j select-pane -D
+bind-key k select-pane -U
+bind-key l select-pane -R
+
+bind-key -n M-h previous-window
+bind-key -n M-l next-window
+
+bind-key -n M-left resize-pane -L
+bind-key -n M-right resize-pane -R
+bind-key -n M-up resize-pane -U
+bind-key -n M-down resize-pane -D
+
+bind-key -n M-S-left resize-pane -L 10
+bind-key -n M-S-right resize-pane -R 10
+bind-key -n M-S-up resize-pane -U 10
+bind-key -n M-S-down resize-pane -D 10
+
+bind-key -n M-1 select-window -t 0
+bind-key -n M-2 select-window -t 1
+bind-key -n M-3 select-window -t 2
+bind-key -n M-4 select-window -t 3
+bind-key -n M-5 select-window -t 4
+bind-key -n M-6 select-window -t 5
+bind-key -n M-7 select-window -t 6
+bind-key -n M-8 select-window -t 7
+bind-key -n M-9 select-window -t 8
+bind-key -n M-0 select-window -t 9
+
+bind-key -n 'M-[' switch-client -p
+bind-key -n 'M-]' switch-client -n
+
+
+
+# ==================================================
+# === Window monitoring for activity and silence ===
+# ==================================================
+bind m setw monitor-activity \; display-message 'Monitor window activity [#{?monitor-activity,ON,OFF}]'
+bind M if -F '#{monitor-silence}' \
+    'setw monitor-silence 0 ; display-message "Monitor window silence [OFF]"' \
+    'command-prompt -p "Monitor silence: interval (s)" "setw monitor-silence %%"'
+
+# Activity bell and whistles
+set -g visual-activity on
+
+# TODO: Does not work as well, check on newer versions
+# set -g visual-silence on
+
+# BUG: bell-action other ignored · Issue #1027 · tmux/tmux · GitHub - https://github.com/tmux/tmux/issues/1027
+# set -g visual-bell on
+# setw -g bell-action other
+
+# ================================================
+# ===     Copy mode, scroll and clipboard      ===
+# ================================================
+
+# smart pane switching with awareness of vim splits
+bind -n C-S-h run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys C-h) || tmux select-pane -L"
+bind -n C-S-j run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys C-j) || tmux select-pane -D"
+bind -n C-S-k run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys C-k) || tmux select-pane -U"
+bind -n C-S-l run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys C-l) || tmux select-pane -R"
+# bind -n 'C-\' run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys 'C-\\') || tmux select-pane -l"
+bind C-l send-keys 'C-l'
+
+bind-key C-h select-pane -L
+bind-key C-j select-pane -D
+bind-key C-k select-pane -U
+bind-key C-l select-pane -R
+
+bind-key C-o rotate-window
+
+bind-key + select-layout main-horizontal
+bind-key = select-layout main-vertical
+
+set-window-option -g other-pane-height 25
+set-window-option -g other-pane-width 80
+set-window-option -g display-panes-time 1500
+set-window-option -g window-status-current-style fg=magenta
+
+bind-key a last-pane
+bind-key q display-panes
+bind-key c new-window
+bind-key t next-window
+bind-key T previous-window
+
+bind-key [ copy-mode
+bind-key ] paste-buffer
+
+# setup 'v' to begin selection as in vim
+bind-key -T copy-mode-vi v send -X begin-selection
+bind-key -T copy-mode-vi y send -X copy-pipe-and-cancel "reattach-to-user-namespace pbcopy"
+
+# Update default binding of `Enter` to also use copy-pipe
+unbind -T copy-mode-vi Enter
+bind-key -T copy-mode-vi Enter send -X copy-pipe-and-cancel "reattach-to-user-namespace pbcopy"
+
+bind-key -T copy-mode-vi y send -X copy-pipe "xclip -sel clip -i"
+
+# =====================================
+# ===           Theme               ===
+# =====================================
+
+# Feel free to NOT use this variables at all (remove, rename)
+# this are named colors, just for convenience
+color_orange="colour166" # 208, 166
+color_purple="colour134" # 135, 134
+color_green="colour076" # 070
+color_blue="colour39"
+color_yellow="colour220"
+color_red="colour160"
+color_black="colour232"
+color_white="white" # 015
+
+# This is a theme CONTRACT, you are required to define variables below
+# Change values, but not remove/rename variables itself
+color_dark="$color_black"
+color_light="$color_white"
+color_session_text="$color_blue"
+color_status_text="colour245"
+color_main="$color_orange"
+color_secondary="$color_purple"
+color_level_ok="$color_green"
+color_level_warn="$color_yellow"
+color_level_stress="$color_red"
+color_window_off_indicator="colour088"
+color_window_off_status_bg="colour238"
+color_window_off_status_current_bg="colour254"
+
+
+status_active_fg="colour117"
+status_active_bg="colour236"
+status_default_fg="colour241"
+status_default_bg="colour234"
+
+
+# =====================================
+# ===    Appearence and status bar  ===
+# =====================================
+set -g mode-style "fg=default,bg=$color_main"
+
+# command line style
+set -g message-style "fg=$color_main,bg=$color_dark"
+
+# status line style
+set -g message-style "fg=$color_status_text,bg=$color_dark"
+
+# window segments in status line
+set -g window-status-separator "#[fg=$color_main,bg=$status_default_bg,bold]|#[default]"
+separator_powerline_left="|"
+separator_powerline_right="|"
+
+# when window has monitoring notification
+setw -g window-status-activity-style "fg=$color_main"
+
+# outline for active pane
+setw -g pane-active-border-style "fg=$color_main"
+
+# general status bar settings
+set -g status on
+set -g status-interval 1
+set -g status-position top
+set -g status-justify left
+set -g status-right-length 100
+
+
+bind -n WheelUpPane    if-shell -F "#{alternate_on}" "send-keys -M" "select-pane -t= \; copy-mode -e \; send-keys -M"
+bind -n WheelDownPane  if-shell -F "#{alternate_on}" "send-keys -M" "select-pane -t= \;                 send-keys -M"
+
+
+# define widgets we're going to use in status bar
+# note, that this is not the complete list, some of them are loaded from plugins
+session_on="#[fg=$color_session_text,bg=$color_black] #S ON  #[default]"
+session_off="#[fg=$color_session_text,bg=$color_black] #S OFF #[default]"
+date="#[fg=black,bg=white] %d/%m %H:%M #[default]"
+
+git_project="#(tmux-git-project)"
+kube_cluster="#(tmux-k8s-get-cluster)"
+
+wg_user_host="#[fg=$color_secondary]#(whoami)#[default]@#H"
+
+status_right="$git_project$kube_cluster $date"
+
+wg_is_keys_off="#[fg=$color_light,bg=$color_window_off_indicator]#([ $(tmux show-option -qv key-table) = 'off' ] && echo 'OFF')#[default]"
+
+setw -g window-status-style "fg=$status_default_fg,bg=$status_default_bg"
+setw -g window-status-format "  #I:#W  "
+setw -g window-status-current-format "  #I:#W* "
+setw -g window-status-current-style "fg=$status_active_fg,bold,bg=$status_active_bg"
+
+setw -g status-style "bg=black"
+setw -g status-left "$session_on"
+setw -g status-left-length 20
+set -g status-right "$status_right"
+# set -g status-right "#{prefix_highlight} $wg_is_keys_off $wg_is_zoomed #{sysstat_cpu} | #{sysstat_mem} | #{sysstat_loadavg} | $wg_user_host | $wg_date $wg_battery #{online_status}"
+
+# ==============================================
+# ===   Nesting local and remote sessions    ===
+# ==============================================
+
+# Session is considered to be remote when we ssh into host
+if-shell 'test -n "$SSH_CLIENT"' \
+    'source-file ~/.tmux/tmux.remote.conf'
+
+# Idea is to turn off all key bindings and prefix handling on local session,
+# so that all keystrokes are passed to inner/remote session
+
+# see: toggle on/off all keybindings · Issue #237 · tmux/tmux - https://github.com/tmux/tmux/issues/237
+
+# Also, change some visual styles when window keys are off
+bind -T root F12  \
+  set prefix None \;\
+  set key-table off \;\
+  set status-left "$session_off" \;\
+  set window-status-current-format "#[fg=$color_window_off_status_bg,bg=$color_window_off_status_current_bg]#[default]  #I:#W* #[fg=$color_window_off_status_current_bg,bg=$color_window_off_status_bg]#[default]" \;\
+  set window-status-current-style "fg=$color_dark,bold,bg=$color_window_off_status_current_bg" \;\
+  if -F '#{pane_in_mode}' 'send-keys -X cancel' \;\
+  refresh-client -S \;\
+
+bind -T off F12 \
+  set -u prefix \;\
+  set -u status-left \;\
+  set -u window-status-current-style \;\
+  set -u window-status-current-format \;\
+  set -u key-table \;\
+  refresh-client -S
+
+set-option -g repeat-time 0
