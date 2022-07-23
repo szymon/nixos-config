@@ -6,7 +6,7 @@ cursor_blink_interval -1
 scrollback_lines 10000
 dynamic_background_opacity yes
 allow_remote_control yes
-
+disable_ligatures always
 
 #--------------------------------------------------------------------
 # Key bindings
