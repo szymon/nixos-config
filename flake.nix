@@ -26,10 +26,10 @@
           ./hardware.nix
           ./configuration.nix
           ./users/szymon/nixos.nix
-          inputs.vscode-server.nixosModule
-          ({ config, pkgs, ... }: {
-            services.vscode-server.enable = true;
-          })
+#           inputs.vscode-server.nixosModule
+#           ({ config, pkgs, ... }: {
+#             services.vscode-server.enable = true;
+#           })
 
           home-manager.nixosModules.home-manager
           {
