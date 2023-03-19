@@ -11,35 +11,31 @@
     };
 
     vscode-server.url = "github:msteen/nixos-vscode-server";
-
   };
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
-    let
-      system = "x86_64-linux";
-      overlays = [ ];
-    in
-    {
-      nixosConfigurations.vbox = nixpkgs.lib.nixosSystem {
-        inherit system;
-        modules = [
-          { nixpkgs.overlays = overlays; }
-          ./hardware.nix
-          ./configuration.nix
-          ./users/szymon/nixos.nix
-#           inputs.vscode-server.nixosModule
-#           ({ config, pkgs, ... }: {
-#             services.vscode-server.enable = true;
-#           })
+  outputs = {
+    self,
+    nixpkgs,
+    home-manager,
+    ...
+  } @ inputs: let
+    system = "x86_64-linux";
+    overlays = [];
+  in {
+    nixosConfigurations.vbox = nixpkgs.lib.nixosSystem {
+      inherit system;
+      modules = [
+        {nixpkgs.overlays = overlays;}
+        ./hardware.nix
+        ./configuration.nix
+        ./users/szymon/nixos.nix
 
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users.szymon = import ./users/szymon/home-manager.nix;
-          }
-
-        ];
-
-      };
+        home-manager.nixosModules.home-manager
+        {
+          home-manager.useGlobalPkgs = true;
+          home-manager.useUserPackages = true;
+          home-manager.users.szymon = import ./users/szymon/home-manager.nix;
+        }
+      ];
     };
+  };
 }

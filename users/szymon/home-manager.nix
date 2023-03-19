@@ -1,21 +1,27 @@
-{ config, lib, pkgs, ... }:
-
-let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   # for out MANPAGER env var
   # https://github.com/sharkdp/bat/issues/1145
   manpager = pkgs.writeShellScriptBin "manpager" ''
     cat $1 | col -bx | bat --language man --style plain
   '';
 
-  config = builtins.fetchTarball {
-    url = "github.com/szymon/dotfiles/tarball/main";
-    # sha256 = "1nlkh5rg4qr7rjzhy2nsngqq9vwzar8grj7dsvxk9dgd9sqgbjvf";
+  config = builtins.fetchGit {
+    url = "https://github.com/szymon/dotfiles";
+    ref = "main";
+    rev = "72a7e5a6f71f87fddea55f1103ddbeb9cf556f64";
   };
-in
-{
+in {
   home.stateVersion = "18.09";
 
   home.packages = [
+    pkgs.cmake
+
+    pkgs.lua
     pkgs.bat
     pkgs.fd
     pkgs.fzf
@@ -46,23 +52,25 @@ in
     EDITOR = "nvim";
     PAGER = "less -FirSwX";
     MANPAGER = "${manpager}/bin/manpager";
+    PATH = "$HOME/.luarocks/bin:$PATH";
   };
 
   programs.git.enable = true;
   programs.direnv.enable = true;
   programs.fish = {
     enable = true;
+
+    interactiveShellInit = ''
+      source '${config}/fish/.config/fish/config.fish'
+    '';
   };
   programs.neovim.enable = true;
   # programs.neovim.package = pkgs.neovim-nightly;
   programs.tmux.enable = true;
 
-
   xdg.configFile."nvim".source = "${config}/nvim_new/.config/nvim";
-  xdg.configFile."fish/config.fish".text = builtins.readFile "${config}/fish/.config/fish/config.fish";
   home.file.".tmux.conf".source = "${config}/tmux/dot-tmux.conf";
   home.file.".tmux/tmux.remote.conf".source = "${config}/tmux/dot-tmux/tmux.remote.conf";
   home.file.".gitconfig".source = "${config}/git/dot-gitconfig";
   home.file.".vimrc".source = "${config}/vim/dot-vimrc";
-
 }
